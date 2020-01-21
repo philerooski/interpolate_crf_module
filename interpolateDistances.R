@@ -17,7 +17,7 @@ fetch_measurements <- function(external_ids) {
   measurements <- measurements_q$asDataFrame() %>%
     select(-ROW_ID, -ROW_VERSION) %>% 
     filter(externalId %in% external_ids) %>% 
-    mutate(createdOn = lubridate::as_datetime(createdOn / 1000),
+    mutate(createdOnTimeZone = as.integer(createdOnTimeZone),
            createdOn = createdOn + lubridate::hours(createdOnTimeZone / 100),
            uploadDate = lubridate::as_date(createdOn),
            externalId = as.character(externalId))
@@ -42,7 +42,7 @@ fetch_location_data <- function() {
   paths <- synDownloadTableColumns(q, "location.json") %>% 
     bind_rows() %>% 
     gather(location.json, path) %>% 
-    mutate(location.json = as.integer(location.json))
+    mutate(location.json = as.character(location.json))
   location_data <- left_join(location_data, paths)
   return(location_data)
 }
@@ -136,4 +136,4 @@ main <- function() {
     rename(externalId = PMI.ID, field_date = Field.Date)
 }
 
-#main()
+main()
